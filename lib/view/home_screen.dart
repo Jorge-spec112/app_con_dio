@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/api_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/app_bloc.dart';
+import '../bloc/app_event.dart';
+import '../bloc/app_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,66 +12,51 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService _apiService = ApiService();
-
-  Map<String, dynamic>? _userData;
-  bool _loading = true;
-  String? _error;
-
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    try {
-      final response = await _apiService.fetchData();
-      if (response.statusCode == 200) {
-        setState(() {
-          _userData = response.data;
-        });
-      } else {
-        setState(() {
-          _error = "Error al cargar datos: ${response.statusCode}";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = "Error en la conexión: $e";
-      });
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
+    // Dispara el evento apenas entres al Home
+    context.read<AppBloc>().add(FetchDataEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Home")),
-      body: Center(
-        child: _loading
-            ? const CircularProgressIndicator()
-            : _error != null
-            ? Text(_error!, style: const TextStyle(color: Colors.red))
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.network("https://picsum.photos/200"),
-
-                  const SizedBox(height: 20),
-                  Text(
-                    "Nombre: ${_userData?['name'] ?? 'Desconocido'}",
-                    style: const TextStyle(fontSize: 18),
+      body: BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) {
+          if (state is AppLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is DataLoaded) {
+            return Center(
+              child: Card(
+                elevation: 5,
+                margin: const EdgeInsets.all(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.network(state.data["thumbnailUrl"], height: 150),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Título: ${state.data["title"]}",
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Email: ${_userData?['email'] ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ],
+                ),
               ),
+            );
+          }
+
+          if (state is AppError) {
+            return Center(child: Text("Error: ${state.message}"));
+          }
+          return const Center(child: Text("Sin datos"));
+        },
       ),
     );
   }
