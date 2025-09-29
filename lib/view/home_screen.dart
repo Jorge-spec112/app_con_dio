@@ -1,7 +1,5 @@
-// lib/views/users_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/modelo/modelo.dart';
-import 'package:flutter_application_1/view/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../bloc/app_event.dart';
@@ -29,61 +27,78 @@ class UsersPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => LoginPage()),
-            );
+            Navigator.pop(context);
           },
         ),
       ),
       body: BlocBuilder<AppBloc, AppState>(
         builder: (context, state) {
           if (state is AppLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset("assets/loading.gif", height: 120, width: 120),
+                  const SizedBox(height: 16),
+                  const Text(
+                    "Cargando usuarios...",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            );
           } else if (state is UsersLoaded) {
             if (state.users.isEmpty) {
               return const Center(child: Text("No hay usuarios registrados"));
             }
             return ListView.builder(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               itemCount: state.users.length,
               itemBuilder: (context, index) {
                 final UserModel user = state.users[index];
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Avatar con iniciales
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.blue.shade300,
-                      child: Text(
-                        getInitials(user.name),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 6,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.blueAccent,
+                          child: Text(
+                            getInitials(user.name),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 12),
+                        Text(
+                          user.name,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          user.email,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    // Nombre
-                    Text(
-                      user.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 6),
-                    // Email
-                    Text(
-                      user.email,
-                      style: const TextStyle(fontSize: 16, color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 30), // espacio entre usuarios
-                  ],
+                  ),
                 );
               },
             );
