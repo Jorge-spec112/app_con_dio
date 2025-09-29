@@ -1,18 +1,14 @@
+// lib/views/login_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/view/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../bloc/app_event.dart';
 import '../bloc/app_state.dart';
-import 'home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final emailCtrl = TextEditingController();
   final passCtrl = TextEditingController();
 
@@ -25,13 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is LoginSuccess) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const UsersPage()),
             );
-          }
-          if (state is AppError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         builder: (context, state) {
@@ -49,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: passCtrl,
                   decoration: const InputDecoration(labelText: "Password"),
-                  obscureText: true,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(

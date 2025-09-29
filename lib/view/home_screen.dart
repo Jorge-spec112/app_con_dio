@@ -1,61 +1,43 @@
+// lib/views/users_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/modelo/modelo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../bloc/app_event.dart';
 import '../bloc/app_state.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Dispara el evento apenas entres al Home
-    context.read<AppBloc>().add(FetchDataEvent());
-  }
+class UsersPage extends StatelessWidget {
+  const UsersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    context.read<AppBloc>().add(FetchUsersEvent());
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Home")),
+      appBar: AppBar(title: const Text("Usuarios Registrados")),
       body: BlocBuilder<AppBloc, AppState>(
         builder: (context, state) {
           if (state is AppLoading) {
             return const Center(child: CircularProgressIndicator());
-          }
-          if (state is DataLoaded) {
-            return Center(
-              child: Card(
-                elevation: 5,
-                margin: const EdgeInsets.all(20),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.network(state.data["thumbnailUrl"], height: 150),
-                      const SizedBox(height: 20),
-                      Text(
-                        "Título: ${state.data["title"]}",
-                        style: const TextStyle(fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+          } else if (state is UsersLoaded) {
+            if (state.users.isEmpty) {
+              return const Center(child: Text("No hay usuarios registrados"));
+            }
+            return ListView.builder(
+              itemCount: state.users.length,
+              itemBuilder: (context, index) {
+                final UserModel user = state.users[index];
+                return ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(user.name),
+                  subtitle: Text(user.email),
+                );
+              },
             );
-          }
-
-          if (state is AppError) {
+          } else if (state is AppError) {
             return Center(child: Text("Error: ${state.message}"));
           }
-          return const Center(child: Text("Sin datos"));
+          return const SizedBox();
         },
       ),
     );
