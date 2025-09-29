@@ -1,20 +1,41 @@
 // lib/views/users_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/modelo/modelo.dart';
+import 'package:flutter_application_1/view/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../bloc/app_event.dart';
 import '../bloc/app_state.dart';
-import '../modelo/modelo.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
+
+  String getInitials(String name) {
+    final parts = name.trim().split(" ");
+    if (parts.length == 1) {
+      return parts[0][0].toUpperCase();
+    } else {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     context.read<AppBloc>().add(FetchUsersEvent());
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Usuarios Registrados")),
+      appBar: AppBar(
+        title: const Text("Usuarios Registrados"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => LoginPage()),
+            );
+          },
+        ),
+      ),
       body: BlocBuilder<AppBloc, AppState>(
         builder: (context, state) {
           if (state is AppLoading) {
@@ -31,18 +52,21 @@ class UsersPage extends StatelessWidget {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Avatar grande y centrado
+                    // Avatar con iniciales
                     CircleAvatar(
                       radius: 50,
-                      backgroundColor: Colors.blue.shade200,
-                      child: const Icon(
-                        Icons.person,
-                        size: 60,
-                        color: Colors.white,
+                      backgroundColor: Colors.blue.shade300,
+                      child: Text(
+                        getInitials(user.name),
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Nombre debajo
+                    // Nombre
                     Text(
                       user.name,
                       style: const TextStyle(
@@ -52,7 +76,7 @@ class UsersPage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 6),
-                    // Email debajo
+                    // Email
                     Text(
                       user.email,
                       style: const TextStyle(fontSize: 16, color: Colors.grey),

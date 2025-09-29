@@ -19,7 +19,7 @@ class LoginPage extends StatelessWidget {
       body: BlocConsumer<AppBloc, AppState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const UsersPage()),
             );
