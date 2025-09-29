@@ -1,10 +1,10 @@
 // lib/views/users_page.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/modelo/modelo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/app_bloc.dart';
 import '../bloc/app_event.dart';
 import '../bloc/app_state.dart';
+import '../modelo/modelo.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -24,13 +24,42 @@ class UsersPage extends StatelessWidget {
               return const Center(child: Text("No hay usuarios registrados"));
             }
             return ListView.builder(
+              padding: const EdgeInsets.all(20),
               itemCount: state.users.length,
               itemBuilder: (context, index) {
                 final UserModel user = state.users[index];
-                return ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(user.name),
-                  subtitle: Text(user.email),
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Avatar grande y centrado
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.blue.shade200,
+                      child: const Icon(
+                        Icons.person,
+                        size: 60,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Nombre debajo
+                    Text(
+                      user.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    // Email debajo
+                    Text(
+                      user.email,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 30), // espacio entre usuarios
+                  ],
                 );
               },
             );
