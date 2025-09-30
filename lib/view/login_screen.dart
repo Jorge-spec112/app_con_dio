@@ -44,13 +44,13 @@ class _LoginPageState extends State<LoginPage> {
         },
         builder: (context, state) {
           if (state is AppLoading) {
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset("assets/loading.gif", height: 120, width: 120),
-                  const SizedBox(height: 16),
-                  const Text(
+                  CircularProgressIndicator(), // 👈 icono de carga nativo
+                  SizedBox(height: 16),
+                  Text(
                     "Iniciando sesión...",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
